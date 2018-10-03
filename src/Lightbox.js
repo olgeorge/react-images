@@ -27,6 +27,28 @@ function normalizeSourceSet (data) {
 	return sourceSet;
 }
 
+export const DefaultImageView = ({
+	sizes,
+    alt,
+    src,
+    srcSet,
+    onClick,
+    className,
+    style,
+}) => {
+	return (
+		<img
+			sizes={sizes}
+			alt={alt}
+			src={src}
+			srcSet={srcSet}
+			onClick={onClick}
+			className={className}
+			style={style}
+		/>
+	)
+};
+
 class Lightbox extends Component {
 	constructor (props) {
 		super(props);
@@ -262,6 +284,7 @@ class Lightbox extends Component {
 			images,
 			onClickImage,
 			showThumbnails,
+            imageView,
 		} = this.props;
 
 		const { imageLoaded } = this.state;
@@ -276,6 +299,7 @@ class Lightbox extends Component {
 		const heightOffset = `${this.theme.header.height + this.theme.footer.height + thumbnailsSize
 			+ (this.theme.container.gutter.vertical)}px`;
 
+		const ImageView = imageView;
 		return (
 			<figure className={css(this.classes.figure)}>
 				{/*
@@ -285,21 +309,34 @@ class Lightbox extends Component {
 				*/}
 				{
                     !image.disableLightbox &&
-					<img
-						className={css(this.classes.image, imageLoaded && this.classes.imageLoaded)}
-						onClick={onClickImage}
+                    <ImageView
+						image={image}
 						sizes={sizes}
 						alt={image.alt}
 						src={image.src}
 						srcSet={sourceSet}
+						onClick={onClickImage}
+						className={css(this.classes.image, imageLoaded && this.classes.imageLoaded)}
 						style={{
 							cursor: onClickImage ? 'pointer' : 'auto',
 							maxHeight: `calc(100vh - ${heightOffset})`,
 						}}
 					/>
+				//	<img
 				}
 			</figure>
 		);
+				//		className={css(this.classes.image, imageLoaded && this.classes.imageLoaded)}
+				//		onClick={onClickImage}
+				//		sizes={sizes}
+				//		alt={image.alt}
+				//		src={image.src}
+				//		srcSet={sourceSet}
+				//		style={{
+				//			cursor: onClickImage ? 'pointer' : 'auto',
+				//			maxHeight: `calc(100vh - ${heightOffset})`,
+				//		}}
+				//	/>
 	}
 	renderThumbnails () {
 		const { images, currentImage, onClickThumbnail, showThumbnails, thumbnailOffset } = this.props;
@@ -397,6 +434,7 @@ Lightbox.propTypes = {
 	).isRequired,
 	isOpen: PropTypes.bool,
 	leftArrowTitle: PropTypes.string,
+    imageView: PropTypes.func,
 	onClickImage: PropTypes.func,
 	onClickNext: PropTypes.func,
 	onClickPrev: PropTypes.func,
@@ -432,6 +470,7 @@ Lightbox.defaultProps = {
 	theme: {},
 	thumbnailOffset: 2,
 	width: 1024,
+	imageView: DefaultImageView,
 };
 Lightbox.childContextTypes = {
 	theme: PropTypes.object.isRequired,
@@ -476,6 +515,5 @@ const defaultStyles = {
 		opacity: 1,
 	},
 };
-
 
 export default Lightbox;
