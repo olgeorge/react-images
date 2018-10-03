@@ -109,6 +109,10 @@ class Lightbox extends Component {
 	// ==============================
 
 	preloadImage (idx, onload) {
+		if (this.props.images[idx] && this.props.images[idx].disableLightbox) {
+            if (onload) onload();
+			return;
+		}
 		return this.preloadImageData(this.props.images[idx], onload);
 	}
 	preloadImageData (data, onload) {
@@ -129,9 +133,11 @@ class Lightbox extends Component {
 		const { currentImage, images } = this.props;
 		const { imageLoaded } = this.state;
 
-		if (!imageLoaded || currentImage === (images.length - 1)) return;
+		if (!imageLoaded || currentImage === (images.length - 1)
+            || this.props.images[currentImage + 1]
+            && this.props.images[currentImage + 1].disableLightbox) return;
 
-		if (event) {
+        if (event) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
@@ -142,9 +148,11 @@ class Lightbox extends Component {
 		const { currentImage } = this.props;
 		const { imageLoaded } = this.state;
 
-		if (!imageLoaded || currentImage === 0) return;
+		if (!imageLoaded || currentImage === 0
+			|| this.props.images[currentImage - 1]
+            && this.props.images[currentImage - 1].disableLightbox) return;
 
-		if (event) {
+        if (event) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
@@ -181,7 +189,9 @@ class Lightbox extends Component {
 	// ==============================
 
 	renderArrowPrev () {
-		if (this.props.currentImage === 0) return null;
+		if (this.props.currentImage === 0
+			|| this.props.images[this.props.currentImage - 1]
+			&& this.props.images[this.props.currentImage - 1].disableLightbox) return null;
 
 		return (
 			<Arrow
@@ -194,7 +204,9 @@ class Lightbox extends Component {
 		);
 	}
 	renderArrowNext () {
-		if (this.props.currentImage === (this.props.images.length - 1)) return null;
+		if (this.props.currentImage === (this.props.images.length - 1)
+			|| this.props.images[this.props.currentImage + 1]
+            && this.props.images[this.props.currentImage + 1].disableLightbox) return null;
 
 		return (
 			<Arrow
@@ -271,18 +283,21 @@ class Lightbox extends Component {
 					https://fb.me/react-unknown-prop is resolved
 					<Swipeable onSwipedLeft={this.gotoNext} onSwipedRight={this.gotoPrev} />
 				*/}
-				<img
-					className={css(this.classes.image, imageLoaded && this.classes.imageLoaded)}
-					onClick={onClickImage}
-					sizes={sizes}
-					alt={image.alt}
-					src={image.src}
-					srcSet={sourceSet}
-					style={{
-						cursor: onClickImage ? 'pointer' : 'auto',
-						maxHeight: `calc(100vh - ${heightOffset})`,
-					}}
-				/>
+				{
+                    !image.disableLightbox &&
+					<img
+						className={css(this.classes.image, imageLoaded && this.classes.imageLoaded)}
+						onClick={onClickImage}
+						sizes={sizes}
+						alt={image.alt}
+						src={image.src}
+						srcSet={sourceSet}
+						style={{
+							cursor: onClickImage ? 'pointer' : 'auto',
+							maxHeight: `calc(100vh - ${heightOffset})`,
+						}}
+					/>
+				}
 			</figure>
 		);
 	}

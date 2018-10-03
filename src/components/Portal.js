@@ -26,7 +26,7 @@ export default class Portal extends Component {
 				.fade-leave.fade-leave-active { opacity: 0.01; transition: opacity ${duration}ms; }
 		`;
 
-		render(
+        render(
 			<PassContext context={this.context}>
 				<div>
 					<style>{styles}</style>
